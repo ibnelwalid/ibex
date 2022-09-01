@@ -55,13 +55,14 @@ module ibex_ex_block #(
 
   import ibex_pkg::*;
 
-  logic [31:0] alu_result, multdiv_result;
+  logic [31:0] alu_result, multdiv_result, zkn_result;
 
   logic [32:0] multdiv_alu_operand_b, multdiv_alu_operand_a;
   logic [33:0] alu_adder_result_ext;
   logic        alu_cmp_result, alu_is_equal_result;
   logic        multdiv_valid;
   logic        multdiv_sel;
+  logic        zkn_sel;
   logic [31:0] alu_imd_val_q[2];
   logic [31:0] alu_imd_val_d[2];
   logic [ 1:0] alu_imd_val_we;
@@ -79,6 +80,14 @@ module ibex_ex_block #(
     assign multdiv_sel = 1'b0;
   end
 
+  always_comb begin
+    // Detect if zk instruction
+    if(alu_operator_i == Zkn_AES32ESIB0) begin
+      zkn_sel = 1'b1;
+    end else begin
+      zkn_sel = 1'b0;
+    end
+  end
   // Intermediate Value Register Mux
   assign imd_val_d_o[0] = multdiv_sel ? multdiv_imd_val_d[0] : {2'b0, alu_imd_val_d[0]};
   assign imd_val_d_o[1] = multdiv_sel ? multdiv_imd_val_d[1] : {2'b0, alu_imd_val_d[1]};
@@ -86,7 +95,7 @@ module ibex_ex_block #(
 
   assign alu_imd_val_q = '{imd_val_q_i[0][31:0], imd_val_q_i[1][31:0]};
 
-  assign result_ex_o  = multdiv_sel ? multdiv_result : alu_result;
+  assign result_ex_o  = multdiv_sel ? multdiv_result : (zkn_sel) ? zkn_result : alu_result;
 
   // branch handling
   assign branch_decision_o  = alu_cmp_result;
@@ -195,5 +204,6 @@ module ibex_ex_block #(
   // unless the intermediate result register is being written (which indicates this isn't the
   // final cycle of ALU operation).
   assign ex_valid_o = multdiv_sel ? multdiv_valid : ~(|alu_imd_val_we);
+  assign zkn_result = alu_operand_a_i + 1; //Placeholder
 
 endmodule

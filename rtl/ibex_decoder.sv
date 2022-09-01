@@ -503,6 +503,7 @@ module ibex_decoder #(
             // RV32B zbc
             {7'b000_0101, 3'b001}, // clmul
             {7'b000_0101, 3'b010}, // clmulr
+            {7'b001_0001, 3'b000}, //aes32esmi
             {7'b000_0101, 3'b011}: begin // clmulh
               illegal_insn = (RV32B == RV32BOTEarlGrey || RV32B == RV32BFull) ? 1'b0 : 1'b1;
             end
@@ -1079,7 +1080,6 @@ module ibex_decoder #(
             {7'b000_0101, 3'b011}: begin
               if (RV32B == RV32BOTEarlGrey || RV32B == RV32BFull) alu_operator_o = ALU_CLMULH;
             end
-
             // RV32B zbe
             {7'b010_0100, 3'b110}: begin
               if (RV32B == RV32BFull) begin
@@ -1093,7 +1093,10 @@ module ibex_decoder #(
                 alu_multicycle_o = 1'b1;
               end
             end
-
+            // RV32Zkn aesesmi
+            {7'b001_0001, 3'b000}: begin
+              alu_operator_o = Zkn_AES32ESIB0;
+            end
             // RV32M instructions, all use the same ALU operation
             {7'b000_0001, 3'b000}: begin // mul
               alu_operator_o = ALU_ADD;
@@ -1127,7 +1130,6 @@ module ibex_decoder #(
               alu_operator_o = ALU_ADD;
               div_sel_o      = (RV32M == RV32MNone) ? 1'b0 : 1'b1;
             end
-
             default: ;
           endcase
         end

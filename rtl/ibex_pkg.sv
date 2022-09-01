@@ -180,7 +180,13 @@ package ibex_pkg;
     ALU_CRC32_H,
     ALU_CRC32C_H,
     ALU_CRC32_W,
-    ALU_CRC32C_W
+    ALU_CRC32C_W,
+
+    // ZKn Instructions
+    Zkn_AES32ESIB0, // aes32esi with bs = 0
+    Zkn_AES32ESIB1, // aes32esi with bs = 1
+    Zkn_AES32ESIB2, // aes32esi with bs = 2
+    Zkn_AES32ESIB3 // aes32esi with bs = 3
   } alu_op_e;
 
   typedef enum logic [1:0] {
