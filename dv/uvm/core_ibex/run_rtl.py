@@ -5,11 +5,13 @@ import os
 import re
 import subprocess
 import sys
+import logging
 from typing import Tuple
 
 from sim_cmd import get_simulator_cmd
 from test_entry import get_test_entry
 
+logging.getLogger().setLevel(logging.INFO)
 _CORE_IBEX = os.path.normpath(os.path.join(os.path.dirname(__file__)))
 
 _TestAndSeed = Tuple[str, int]
@@ -57,8 +59,14 @@ def get_test_sim_cmd(base_cmd, test, idx, seed, sim_dir, bin_dir, lsf_cmd):
                else it_cmd)
 
     test_name = test['test']
+    # Directed tests have no iterations and their .bin is stored under directed_asm_test
+    directed_test = True if 'asm_test' in test else False
 
-    binary = os.path.join(bin_dir, '{}_{}.bin'.format(test_name, idx))
+    if directed_test:
+        directed_bin_dir = bin_dir.replace("asm_test","directed_asm_test")
+        binary = os.path.join(directed_bin_dir, '{}.bin'.format(test_name))
+    else:
+        binary = os.path.join(bin_dir, '{}_{}.bin'.format(test_name, idx))
 
     # Do final interpolation into the test command for variables that depend on
     # the test name or iteration number.
@@ -137,6 +145,9 @@ def main() -> int:
     # so). Note that we don't capture the success or failure of the subprocess:
     # if something goes horribly wrong, we assume we won't have a matching
     # trace.
+    # Just a small hack for sim to finish gracefully
+    #test_cmd = test_cmd.replace("run -a","run 500000")
+    logging.info("Running {}".format(test_cmd))
     sim_log = os.path.join(test_sim_dir, 'sim.log')
     with open(sim_log, 'wb') as sim_fd:
         subprocess.run(test_cmd, shell=True, stdout=sim_fd, stderr=sim_fd)

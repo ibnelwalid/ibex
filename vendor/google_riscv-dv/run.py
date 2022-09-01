@@ -443,6 +443,7 @@ def gcc_compile(test_list, output_dir, isa, mabi, opts, debug_cmd):
             if not re.search('mabi', cmd):
                 cmd += (" -mabi={}".format(mabi))
             logging.info("Compiling {}".format(asm))
+            logging.info(cmd)
             run_cmd_output(cmd.split(), debug_cmd=debug_cmd)
             # Convert the ELF to plain binary, used in RTL sim
             logging.info("Converting to {}".format(binary))
@@ -480,7 +481,6 @@ def run_assembly(asm_test, iss_yaml, isa, mabi, gcc_opts, iss_opts, output_dir,
     iss_list = iss_opts.split(",")
     run_cmd("mkdir -p {}/directed_asm_test".format(output_dir))
     logging.info("Compiling assembly test : {}".format(asm_test))
-
     # gcc compilation
     cmd = ("{} -static -mcmodel=medany \
          -fvisibility=hidden -nostdlib \

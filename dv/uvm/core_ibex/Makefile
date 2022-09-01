@@ -17,7 +17,7 @@ endif
 endif
 
 # Explicitly ask for the bash shell
-SHELL                := bash
+SHELL                := bash -x
 
 # Seed for instruction generator and RTL simulation
 #
@@ -51,8 +51,8 @@ ISS                 := spike
 # ISS runtime options
 ISS_OPTS            :=
 # ISA
-ISA                 := rv32imcb
-ISA_ISS             := rv32imc_Zba_Zbb_Zbc_Zbs_Xbitmanip
+#ISA                 := rv32imc_Zba_Zbb_Zbc_Zbs_Xbitmani
+ISA_ISS             := ${ISA}
 # Test name (default: full regression)
 TEST                := all
 TESTLIST            := riscv_dv_extension/testlist.yaml
@@ -96,7 +96,6 @@ OUT-DIR := $(dir $(OUT)/)
 # get printed when VERBOSE.
 verb = $(if $(filter-out 0,$(VERBOSE)),,@)
 
-SHELL=/bin/bash
 
 export PRJ_DIR:= $(realpath ../../..)
 
@@ -475,7 +474,7 @@ riscv_dv_fcov: $(rtl-sim-logs)
           --core ibex \
           --dir ${OUT-SEED}/rtl_sim \
           -o ${OUT-SEED}/fcov \
-          --isa rv32imcb \
+          --isa ${ISA} \
           --custom_target riscv_dv_extension
 
 # Merge all output coverage directories into the <out>/rtl_sim directory

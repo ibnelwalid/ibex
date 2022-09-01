@@ -97,7 +97,7 @@ def run_cmd(cmd, timeout_s=999, exit_on_error=1, check_return_code=True,
     Returns:
       command output
     """
-    logging.debug(cmd)
+    logging.info(cmd)
     if debug_cmd:
         debug_cmd.write(cmd)
         debug_cmd.write("\n\n")
@@ -149,6 +149,7 @@ def run_parallel_cmd(cmd_list, timeout_s=999, exit_on_error=0,
         return
     children = []
     for cmd in cmd_list:
+        logging.info(cmd)
         ps = subprocess.Popen("exec " + cmd,
                               shell=True,
                               executable='/bin/bash',
@@ -184,6 +185,7 @@ def run_cmd_output(cmd, debug_cmd=None):
       cmd          : Command line to execute
     """
     logging.debug(" ".join(cmd))
+    logging.info(" ".join(cmd))
     if debug_cmd:
         debug_cmd.write(" ".join(cmd))
         debug_cmd.write("\n\n")
