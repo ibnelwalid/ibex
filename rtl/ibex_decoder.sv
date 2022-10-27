@@ -201,7 +201,6 @@ module ibex_decoder #(
   /////////////
   // Decoder //
   /////////////
-
   always_comb begin
     jump_in_dec_o         = 1'b0;
     jump_set_o            = 1'b0;
@@ -503,7 +502,14 @@ module ibex_decoder #(
             // RV32B zbc
             {7'b000_0101, 3'b001}, // clmul
             {7'b000_0101, 3'b010}, // clmulr
-            {7'b001_0001, 3'b000}, //aes32esmi
+            {7'b001_0001, 3'b000}, //aes32esib0
+            {7'b011_0001, 3'b000}, //aes32esib1
+            {7'b101_0001, 3'b000}, //aes32esib2
+            {7'b111_0001, 3'b000}, //aes32esib3
+            {7'b001_0011, 3'b000}, //aes32esmib0
+            {7'b011_0011, 3'b000}, //aes32esmib1
+            {7'b101_0011, 3'b000}, //aes32esmib2
+            {7'b111_0011, 3'b000}, //aes32esmib3
             {7'b000_0101, 3'b011}: begin // clmulh
               illegal_insn = (RV32B == RV32BOTEarlGrey || RV32B == RV32BFull) ? 1'b0 : 1'b1;
             end
@@ -950,47 +956,69 @@ module ibex_decoder #(
 
         if (instr_alu[26]) begin
           if (RV32B != RV32BNone) begin
-            unique case ({instr_alu[26:25], instr_alu[14:12]})
-              {2'b11, 3'b001}: begin
-                alu_operator_o   = ALU_CMIX; // cmix
-                alu_multicycle_o = 1'b1;
-                if (instr_first_cycle_i) begin
-                  use_rs3_d = 1'b1;
-                end else begin
-                  use_rs3_d = 1'b0;
+            if(instr_alu[14:12] != 0)
+              unique case ({instr_alu[26:25], instr_alu[14:12]})
+                {2'b11, 3'b001}: begin
+                  alu_operator_o   = ALU_CMIX; // cmix
+                  alu_multicycle_o = 1'b1;
+                  if (instr_first_cycle_i) begin
+                    use_rs3_d = 1'b1;
+                  end else begin
+                    use_rs3_d = 1'b0;
+                  end
                 end
-              end
-              {2'b11, 3'b101}: begin
-                alu_operator_o   = ALU_CMOV; // cmov
-                alu_multicycle_o = 1'b1;
-                if (instr_first_cycle_i) begin
-                  use_rs3_d = 1'b1;
-                end else begin
-                  use_rs3_d = 1'b0;
+                {2'b11, 3'b101}: begin
+                  alu_operator_o   = ALU_CMOV; // cmov
+                  alu_multicycle_o = 1'b1;
+                  if (instr_first_cycle_i) begin
+                    use_rs3_d = 1'b1;
+                  end else begin
+                    use_rs3_d = 1'b0;
+                  end
                 end
-              end
-              {2'b10, 3'b001}: begin
-                alu_operator_o   = ALU_FSL;  // fsl
-                alu_multicycle_o = 1'b1;
-                if (instr_first_cycle_i) begin
-                  use_rs3_d = 1'b1;
-                end else begin
-                  use_rs3_d = 1'b0;
+                {2'b10, 3'b001}: begin
+                  alu_operator_o   = ALU_FSL;  // fsl
+                  alu_multicycle_o = 1'b1;
+                  if (instr_first_cycle_i) begin
+                    use_rs3_d = 1'b1;
+                  end else begin
+                    use_rs3_d = 1'b0;
+                  end
                 end
-              end
-              {2'b10, 3'b101}: begin
-                alu_operator_o   = ALU_FSR;  // fsr
-                alu_multicycle_o = 1'b1;
-                if (instr_first_cycle_i) begin
-                  use_rs3_d = 1'b1;
-                end else begin
-                  use_rs3_d = 1'b0;
+                {2'b10, 3'b101}: begin
+                  alu_operator_o   = ALU_FSR;  // fsr
+                  alu_multicycle_o = 1'b1;
+                  if (instr_first_cycle_i) begin
+                    use_rs3_d = 1'b1;
+                  end else begin
+                    use_rs3_d = 1'b0;
+                  end
                 end
-              end
-              default: ;
-            endcase
+                default: ;
+              endcase
+            else
+              unique case ({instr_alu[31:25], instr_alu[14:12]})
+                // RV32Zkn aesesmib0
+                {7'b001_0011, 3'b000}: begin
+                  $display("Matched esmi b0");
+                  alu_operator_o = Zkn_AES32ESMIB0;
+                end
+                // RV32Zkn aesesmib1
+                {7'b011_0011, 3'b000}: begin
+                  alu_operator_o = Zkn_AES32ESMIB1;
+                end
+                // RV32Zkn aesesmib2
+                {7'b101_0011, 3'b000}: begin
+                  alu_operator_o = Zkn_AES32ESMIB2;
+                end
+                // RV32Zkn aesesmib3
+                {7'b111_0011, 3'b000}: begin
+                  alu_operator_o = Zkn_AES32ESMIB3;
+                end
+              endcase
           end
         end else begin
+          $display("instr_alu=%h, inside alu ops", instr_alu);
           unique case ({instr_alu[31:25], instr_alu[14:12]})
             // RV32I ALU operations
             {7'b000_0000, 3'b000}: alu_operator_o = ALU_ADD;   // Add
@@ -1093,9 +1121,21 @@ module ibex_decoder #(
                 alu_multicycle_o = 1'b1;
               end
             end
-            // RV32Zkn aesesmi
+            // RV32Zkn aesesib0
             {7'b001_0001, 3'b000}: begin
               alu_operator_o = Zkn_AES32ESIB0;
+            end
+            // RV32Zkn aesesib1
+            {7'b011_0001, 3'b000}: begin
+              alu_operator_o = Zkn_AES32ESIB1;
+            end
+            // RV32Zkn aesesib2
+            {7'b101_0001, 3'b000}: begin
+              alu_operator_o = Zkn_AES32ESIB2;
+            end
+            // RV32Zkn aesesib3
+            {7'b111_0001, 3'b000}: begin
+              alu_operator_o = Zkn_AES32ESIB3;
             end
             // RV32M instructions, all use the same ALU operation
             {7'b000_0001, 3'b000}: begin // mul

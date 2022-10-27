@@ -1063,6 +1063,7 @@ module ibex_tracer (
         INSN_CRC32C_W:   decode_r1_insn("crc32c.w");
 
         // RV32B - ZKN
+        INSN_AES32ESMI:   decode_r_insn("aes32esmi");
         INSN_AES32ESI:   decode_r_insn("aes32esi");
 
         default:         decode_mnemonic("INVALID");

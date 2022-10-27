@@ -95,6 +95,10 @@ ${PRJ_DIR}/rtl/ibex_pmp.sv
 ${PRJ_DIR}/rtl/ibex_core.sv
 ${PRJ_DIR}/rtl/ibex_top.sv
 ${PRJ_DIR}/rtl/ibex_top_tracing.sv
+${PRJ_DIR}/rtl/ibex_zkn_ex.sv
+${PRJ_DIR}/rtl/ibex_zkn_xtime.sv
+${PRJ_DIR}/rtl/ibex_zkn_sbox.sv
+
 
 // Core DV files
 ${PRJ_DIR}/vendor/google_riscv-dv/src/riscv_signature_pkg.sv

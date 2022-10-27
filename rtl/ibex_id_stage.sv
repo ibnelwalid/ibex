@@ -418,7 +418,9 @@ module ibex_id_stage #(
   /////////////
   // Decoder //
   /////////////
-
+  always @(alu_operator) begin
+    $display("Current PC: %h, instr_alu: %h, instr_alu: %b, alu_operator: %h", pc_id_i, instr_rdata_alu_i, instr_rdata_alu_i, alu_operator);
+  end
   ibex_decoder #(
     .RV32E          (RV32E),
     .RV32M          (RV32M),

@@ -63,6 +63,8 @@ module ibex_ex_block #(
   logic        multdiv_valid;
   logic        multdiv_sel;
   logic        zkn_sel;
+  logic [1:0]  zkn_bs;
+  logic        zkn_mr;
   logic [31:0] alu_imd_val_q[2];
   logic [31:0] alu_imd_val_d[2];
   logic [ 1:0] alu_imd_val_we;
@@ -79,14 +81,59 @@ module ibex_ex_block #(
   end else begin : gen_multdiv_no_m
     assign multdiv_sel = 1'b0;
   end
-
+  initial begin
+    $display("esib0: %h, esib1: %h, esib2: %h, esib3: %h, esmib0: %h, esmib1: %h, esmib2: %h, esmib3:%h", Zkn_AES32ESIB0, Zkn_AES32ESIB1, Zkn_AES32ESIB2, Zkn_AES32ESIB3, Zkn_AES32ESMIB0, Zkn_AES32ESMIB1, Zkn_AES32ESMIB2, Zkn_AES32ESMIB3);
+  end
   always_comb begin
     // Detect if zk instruction
-    if(alu_operator_i == Zkn_AES32ESIB0) begin
-      zkn_sel = 1'b1;
-    end else begin
-      zkn_sel = 1'b0;
-    end
+    $monitor("operator=%h, zkn_sel=%b, zkn_bs=%b, zkn_mr=%b", alu_operator_i, zkn_sel, zkn_bs, zkn_mr);
+    case(alu_operator_i)
+      Zkn_AES32ESIB0: begin
+        zkn_sel = 1'b1;
+        zkn_bs = 0;
+        zkn_mr = 1'b0;
+      end
+      Zkn_AES32ESIB1: begin
+        zkn_sel = 1'b1;
+        zkn_bs = 1;
+        zkn_mr = 1'b0;
+      end
+      Zkn_AES32ESIB2: begin
+        zkn_sel = 1'b1;
+        zkn_bs = 2;
+        zkn_mr = 1'b0;
+      end
+      Zkn_AES32ESIB3: begin
+        zkn_sel = 1'b1;
+        zkn_bs = 3;
+        zkn_mr = 1'b0;
+      end
+      Zkn_AES32ESMIB0: begin
+        zkn_sel = 1'b1;
+        zkn_bs = 0;
+        zkn_mr = 1'b1;
+      end
+      Zkn_AES32ESMIB1: begin
+        zkn_sel = 1'b1;
+        zkn_bs = 1;
+        zkn_mr = 1'b1;
+      end
+      Zkn_AES32ESMIB2: begin
+        zkn_sel = 1'b1;
+        zkn_bs = 2;
+        zkn_mr = 1'b1;
+      end
+      Zkn_AES32ESMIB3: begin
+        zkn_sel = 1'b1;
+        zkn_bs = 3;
+        zkn_mr = 1'b1;
+      end
+      default: begin
+        zkn_sel = 1'b0;
+        zkn_bs = 0;
+        zkn_mr = 0;
+      end
+    endcase
   end
   // Intermediate Value Register Mux
   assign imd_val_d_o[0] = multdiv_sel ? multdiv_imd_val_d[0] : {2'b0, alu_imd_val_d[0]};
@@ -200,10 +247,12 @@ module ibex_ex_block #(
     );
   end
 
+  // Zkn Execution Block
+  ibex_zkn_ex zkn_ex (zkn_bs, zkn_mr, alu_operand_b_i, alu_operand_a_i, zkn_result);
+
   // Multiplier/divider may require multiple cycles. The ALU output is valid in the same cycle
   // unless the intermediate result register is being written (which indicates this isn't the
   // final cycle of ALU operation).
   assign ex_valid_o = multdiv_sel ? multdiv_valid : ~(|alu_imd_val_we);
-  assign zkn_result = alu_operand_a_i + 1; //Placeholder
 
 endmodule

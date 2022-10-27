@@ -294,6 +294,7 @@ package ibex_tracer_pkg;
 
   //Zkn
   parameter logic [31:0] INSN_AES32ESI = {2'b??,5'b10001, 10'b?, 3'b000, 5'b?, {OPCODE_OP}};
+  parameter logic [31:0] INSN_AES32ESMI = {2'b??,5'b10011, 10'b?, 3'b000, 5'b?, {OPCODE_OP}};
   // LOAD & STORE
   parameter logic [31:0] INSN_LOAD    = {25'h?,                            {OPCODE_LOAD } };
   parameter logic [31:0] INSN_STORE   = {25'h?,                            {OPCODE_STORE} };

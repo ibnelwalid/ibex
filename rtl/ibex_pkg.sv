@@ -183,6 +183,10 @@ package ibex_pkg;
     ALU_CRC32C_W,
 
     // ZKn Instructions
+    Zkn_AES32ESMIB0, // aes32esmi with bs = 0
+    Zkn_AES32ESMIB1, // aes32esmi with bs = 1
+    Zkn_AES32ESMIB2, // aes32esmi with bs = 2
+    Zkn_AES32ESMIB3, // aes32esmi with bs = 3
     Zkn_AES32ESIB0, // aes32esi with bs = 0
     Zkn_AES32ESIB1, // aes32esi with bs = 1
     Zkn_AES32ESIB2, // aes32esi with bs = 2
