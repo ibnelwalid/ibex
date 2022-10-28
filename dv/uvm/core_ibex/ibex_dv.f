@@ -95,7 +95,7 @@ ${PRJ_DIR}/rtl/ibex_pmp.sv
 ${PRJ_DIR}/rtl/ibex_core.sv
 ${PRJ_DIR}/rtl/ibex_top.sv
 ${PRJ_DIR}/rtl/ibex_top_tracing.sv
-${PRJ_DIR}/rtl/ibex_zkn_ex.sv
+${PRJ_DIR}/rtl/ibex_zkn_aes_ex.sv
 ${PRJ_DIR}/rtl/ibex_zkn_xtime.sv
 ${PRJ_DIR}/rtl/ibex_zkn_sbox.sv
 

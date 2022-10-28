@@ -510,6 +510,14 @@ module ibex_decoder #(
             {7'b011_0011, 3'b000}, //aes32esmib1
             {7'b101_0011, 3'b000}, //aes32esmib2
             {7'b111_0011, 3'b000}, //aes32esmib3
+            {7'b001_0101, 3'b000}, //aes32dsib0
+            {7'b011_0101, 3'b000}, //aes32dsib1
+            {7'b101_0101, 3'b000}, //aes32dsib2
+            {7'b111_0101, 3'b000}, //aes32dsib3
+            {7'b001_0111, 3'b000}, //aes32dsmib0
+            {7'b011_0111, 3'b000}, //aes32dsmib1
+            {7'b101_0111, 3'b000}, //aes32dsmib2
+            {7'b111_0111, 3'b000}, //aes32dsmib3
             {7'b000_0101, 3'b011}: begin // clmulh
               illegal_insn = (RV32B == RV32BOTEarlGrey || RV32B == RV32BFull) ? 1'b0 : 1'b1;
             end
@@ -1015,6 +1023,22 @@ module ibex_decoder #(
                 {7'b111_0011, 3'b000}: begin
                   alu_operator_o = Zkn_AES32ESMIB3;
                 end
+                // RV32Zkn aesdsmib0
+                {7'b001_0111, 3'b000}: begin
+                  alu_operator_o = Zkn_AES32DSMIB0;
+                end
+                // RV32Zkn aesdsmib1
+                {7'b011_0111, 3'b000}: begin
+                  alu_operator_o = Zkn_AES32DSMIB1;
+                end
+                // RV32Zkn aesdsmib2
+                {7'b101_0111, 3'b000}: begin
+                  alu_operator_o = Zkn_AES32DSMIB2;
+                end
+                // RV32Zkn aesdsmib3
+                {7'b111_0111, 3'b000}: begin
+                  alu_operator_o = Zkn_AES32DSMIB3;
+                end
               endcase
           end
         end else begin
@@ -1136,6 +1160,22 @@ module ibex_decoder #(
             // RV32Zkn aesesib3
             {7'b111_0001, 3'b000}: begin
               alu_operator_o = Zkn_AES32ESIB3;
+            end
+            // RV32Zkn aesdsib0
+            {7'b001_0101, 3'b000}: begin
+              alu_operator_o = Zkn_AES32DSIB0;
+            end
+            // RV32Zkn aesdsib1
+            {7'b011_0101, 3'b000}: begin
+              alu_operator_o = Zkn_AES32DSIB1;
+            end
+            // RV32Zkn aesdsib2
+            {7'b101_0101, 3'b000}: begin
+              alu_operator_o = Zkn_AES32DSIB2;
+            end
+            // RV32Zkn aesdsib3
+            {7'b111_0101, 3'b000}: begin
+              alu_operator_o = Zkn_AES32DSIB3;
             end
             // RV32M instructions, all use the same ALU operation
             {7'b000_0001, 3'b000}: begin // mul

@@ -1065,6 +1065,8 @@ module ibex_tracer (
         // RV32B - ZKN
         INSN_AES32ESMI:   decode_r_insn("aes32esmi");
         INSN_AES32ESI:   decode_r_insn("aes32esi");
+        INSN_AES32DSMI:   decode_r_insn("aes32dsmi");
+        INSN_AES32DSI:   decode_r_insn("aes32dsi");
 
         default:         decode_mnemonic("INVALID");
       endcase

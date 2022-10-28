@@ -65,6 +65,7 @@ module ibex_ex_block #(
   logic        zkn_sel;
   logic [1:0]  zkn_bs;
   logic        zkn_mr;
+  logic        zkn_enc_dec;
   logic [31:0] alu_imd_val_q[2];
   logic [31:0] alu_imd_val_d[2];
   logic [ 1:0] alu_imd_val_we;
@@ -92,46 +93,103 @@ module ibex_ex_block #(
         zkn_sel = 1'b1;
         zkn_bs = 0;
         zkn_mr = 1'b0;
+        zkn_enc_dec = 1'b1;
       end
       Zkn_AES32ESIB1: begin
         zkn_sel = 1'b1;
         zkn_bs = 1;
         zkn_mr = 1'b0;
+        zkn_enc_dec = 1'b1;
       end
       Zkn_AES32ESIB2: begin
         zkn_sel = 1'b1;
         zkn_bs = 2;
         zkn_mr = 1'b0;
+        zkn_enc_dec = 1'b1;
       end
       Zkn_AES32ESIB3: begin
         zkn_sel = 1'b1;
         zkn_bs = 3;
         zkn_mr = 1'b0;
+        zkn_enc_dec = 1'b1;
       end
       Zkn_AES32ESMIB0: begin
         zkn_sel = 1'b1;
         zkn_bs = 0;
         zkn_mr = 1'b1;
+        zkn_enc_dec = 1'b1;
       end
       Zkn_AES32ESMIB1: begin
         zkn_sel = 1'b1;
         zkn_bs = 1;
         zkn_mr = 1'b1;
+        zkn_enc_dec = 1'b1;
       end
       Zkn_AES32ESMIB2: begin
         zkn_sel = 1'b1;
         zkn_bs = 2;
         zkn_mr = 1'b1;
+        zkn_enc_dec = 1'b1;
       end
       Zkn_AES32ESMIB3: begin
         zkn_sel = 1'b1;
         zkn_bs = 3;
         zkn_mr = 1'b1;
+        zkn_enc_dec = 1'b1;
+      end
+      Zkn_AES32DSIB0: begin
+        zkn_sel = 1'b1;
+        zkn_bs = 0;
+        zkn_mr = 1'b0;
+        zkn_enc_dec = 1'b0;
+      end
+      Zkn_AES32DSIB1: begin
+        zkn_sel = 1'b1;
+        zkn_bs = 1;
+        zkn_mr = 1'b0;
+        zkn_enc_dec = 1'b0;
+      end
+      Zkn_AES32DSIB2: begin
+        zkn_sel = 1'b1;
+        zkn_bs = 2;
+        zkn_mr = 1'b0;
+        zkn_enc_dec = 1'b0;
+      end
+      Zkn_AES32DSIB3: begin
+        zkn_sel = 1'b1;
+        zkn_bs = 3;
+        zkn_mr = 1'b0;
+        zkn_enc_dec = 1'b0;
+      end
+      Zkn_AES32DSMIB0: begin
+        zkn_sel = 1'b1;
+        zkn_bs = 0;
+        zkn_mr = 1'b1;
+        zkn_enc_dec = 1'b0;
+      end
+      Zkn_AES32DSMIB1: begin
+        zkn_sel = 1'b1;
+        zkn_bs = 1;
+        zkn_mr = 1'b1;
+        zkn_enc_dec = 1'b0;
+      end
+      Zkn_AES32DSMIB2: begin
+        zkn_sel = 1'b1;
+        zkn_bs = 2;
+        zkn_mr = 1'b1;
+        zkn_enc_dec = 1'b0;
+      end
+      Zkn_AES32DSMIB3: begin
+        zkn_sel = 1'b1;
+        zkn_bs = 3;
+        zkn_mr = 1'b1;
+        zkn_enc_dec = 1'b0;
       end
       default: begin
         zkn_sel = 1'b0;
         zkn_bs = 0;
         zkn_mr = 0;
+        zkn_enc_dec = 1'b0;
       end
     endcase
   end
@@ -248,7 +306,7 @@ module ibex_ex_block #(
   end
 
   // Zkn Execution Block
-  ibex_zkn_ex zkn_ex (zkn_bs, zkn_mr, alu_operand_b_i, alu_operand_a_i, zkn_result);
+  ibex_zkn_aes_ex zkn_ex (zkn_bs, zkn_mr, zkn_enc_dec, alu_operand_b_i, alu_operand_a_i, zkn_result);
 
   // Multiplier/divider may require multiple cycles. The ALU output is valid in the same cycle
   // unless the intermediate result register is being written (which indicates this isn't the
